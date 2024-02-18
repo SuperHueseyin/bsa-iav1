@@ -3,33 +3,11 @@
 # Version 0.1 
 # last edit: 2024-07-01
 
-# TODO: Fügen Sie dem Skript eine Möglichkeit hinzu die CSV Datei über einen Übergabeparameter anzugeben. 
-# Parameter help description
-param(
-    [Parameter(Mandatory = $true)]
-    [string]$csvPath,
-
-    [string]$server
-)
-
-if (-not ([System.IO.File]::Exists($csvPath))) {
-    Write-Host "CSV Datei $csvPath existiert nicht!"
-	Read-Host "Datei ($csvPath) exitstiert nicht."
-    exit 1 # 1 indiziert Fehler.
-}
-
-#$csvPath = "$PSScriptRoot\Students.csv"  # PsScriptRoot zeigt auf Order in der das Script liegt.
+$csvPath = "$PSScriptRoot\Students.csv"  # PsScriptRoot zeigt auf Order in der das Script liegt.
 
 $userData = Import-Csv -Path $csvPath
 
-$basePath = "OU=BSAP,DC=bsap,DC=exam"  # Muss angepasst werden auf den Server. Evtl auch als Übergabeparameter setzten oder abfragen?
-
-# TODO:
-# STrukturieren Sie den Code in 3 Funktionen. 
-# Add-Users
-# Add-Ou -Path "" -Name ""
-# Add-Groups
-
+$basePath = "OU=bsap,DC=bsap,DC=com"
 
 foreach ($entry in $userData) 
 {
@@ -55,13 +33,14 @@ foreach ($entry in $userData)
      
         # set ou path where the user should be added.
         $ouUserPath = "OU=$ouName,$ouPath" # "OU=$ouName,OU=Benutzer,OU=BSAP,DC=bsap,DC=exam" 
-
+        
         # TODO: Erweitern Sie den Befehl New-ADUser sodass alle Felder unter Allgemein ausgefüllt sind.
         New-AdUser -SamAccountName $username -UserPrincipalName $username -Name $username -AccountPassword $accountPW  -Enabled $true -ChangePasswordAtLogon $true -Path $ouUserPath -EmailAddress $mail -GivenName $entry.Vorname -Surname $entry.Nachname -Description "Ein Schüler Account" -Office "A120" -DisplayName " $($entry.Vorname) $($entry.Nachname)" 
 
 
         # TODO: Erstellen Sie eine Gruppe mit den Namen der Klasse unter der OU Gruppen und fügen Sie alle Schüler*innen hinzu.
         #Check if ou already exists
+        
         $groupName = $entry.Klasse
         $groupPath = "OU=Gruppen,$basePath"
         if (-not (Get-ADGroup -Filter { Name -eq $groupName })) {
@@ -71,8 +50,6 @@ foreach ($entry in $userData)
         }
         # Add user to group
         Add-ADGroupMember -Identity $groupName -Members $username
-
-            
     }
 }
 
