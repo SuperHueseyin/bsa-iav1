@@ -1,1 +1,2 @@
-# bsa-iav1
+# Rudolf-Diesel-Fachschule Nürnberg
+# Betriebssysteme und Administration (BSA)
