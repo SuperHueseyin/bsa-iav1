@@ -1,2 +1,1 @@
-# Rudolf-Diesel-Fachschule Nürnberg
-# Betriebssysteme und Administration (BSA)
+# Rudolf-Diesel-Fachschule Nürnberg Betriebssysteme und Administration (BSA)
